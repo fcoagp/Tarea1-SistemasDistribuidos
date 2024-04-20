@@ -1,0 +1,53 @@
+services:
+  api_rest:
+    build: api_rest
+    environment:
+      - CACHE_TYPE=DUPLICATE
+    ports:
+      - 8000:5000
+    depends_on:
+      - redis1
+      - redis2
+      - redis3
+  redis1:
+    hostname: redis1
+    image: bitnami/redis:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    command: "/opt/bitnami/scripts/redis/run.sh --maxmemory 2mb --maxmemory-policy allkeys-lru"
+    ports:
+      - 63791:6379
+  redis2:
+    hostname: redis2
+    image: bitnami/redis:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    command: "/opt/bitnami/scripts/redis/run.sh --maxmemory 2mb --maxmemory-policy allkeys-lru"
+    ports:
+      - 63792:6379
+  redis3:
+    hostname: redis3
+    image: bitnami/redis:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    command: "/opt/bitnami/scripts/redis/run.sh --maxmemory 2mb --maxmemory-policy allkeys-lru"
+    ports:
+      - 63793:6379
+  grpc_server:
+    build: grpc_server
+    depends_on:
+      - db
+
+  db:
+    image: postgres:bullseye
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  
+volumes:
+  pgdata:
