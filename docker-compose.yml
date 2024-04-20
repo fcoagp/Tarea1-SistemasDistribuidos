@@ -2,7 +2,8 @@ services:
   api_rest:
     build: api_rest
     environment:
-      - CACHE_TYPE=DUPLICATE
+      - CACHE_TYPE=PARTITION
+      - GRPC_SERVER=grpc_server:50051
     ports:
       - 8000:5000
     depends_on:
@@ -46,8 +47,9 @@ services:
       POSTGRES_PASSWORD: secret
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d
     ports:
       - 5432:5432
-  
+
 volumes:
   pgdata:

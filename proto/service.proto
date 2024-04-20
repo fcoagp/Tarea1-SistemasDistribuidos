@@ -1,0 +1,20 @@
+service Name {
+  // Sends a greeting
+  rpc getName (NameRequest) returns (NameReply) {}
+}
+
+// The request message containing the user's name.
+message NameRequest {
+  required string id = 1;
+}
+
+// The response message containing the greetings
+message NameReply {
+  required int32 id = 1;
+  required string nconst = 2;
+  required string primaryName = 3;
+  required string birthYear = 4; 
+  required string deathYear = 5;
+  required string primaryProfession = 6;
+  required string knownForTitles = 7;
+}

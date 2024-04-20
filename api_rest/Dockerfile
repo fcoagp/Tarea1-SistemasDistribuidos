@@ -7,4 +7,5 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 ENV CACHE_TYPE $CACHE_TYPE
+ENV GRPC_SERVER $GRPC_SERVER
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
