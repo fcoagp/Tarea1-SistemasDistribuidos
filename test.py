@@ -15,7 +15,7 @@ print(r.text)
 
 
 for i in range(200000):
-    id = randrange(1000,5000)
+    id = randrange(1000,21000)
     start_time = time.time_ns()
     r = requests.get(URL + str(id))
     ms = time.time_ns() - start_time
