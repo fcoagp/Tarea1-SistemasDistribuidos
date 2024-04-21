@@ -4,7 +4,7 @@ import csv
 from random import randrange
 
 URL = "http://localhost:8000/name/"
-FILENAME = "tests.csv"
+FILENAME = "tests_{}.csv".format(time.time())
 HEADERS = ['request_id','db_id','time','source']
 file = open(FILENAME,'w')
 csv_file = csv.DictWriter(file,fieldnames=HEADERS)
@@ -14,7 +14,7 @@ r = requests.get("http://localhost:8000/deleteKeys")
 print(r.text)
 
 
-for i in range(200000):
+for i in range(100000):
     id = randrange(1000,21000)
     start_time = time.time_ns()
     r = requests.get(URL + str(id))

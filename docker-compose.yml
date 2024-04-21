@@ -2,7 +2,7 @@ services:
   api_rest:
     build: api_rest
     environment:
-      - CACHE_TYPE=PARTITION
+      - CACHE_TYPE=DUPLICATE
       - GRPC_SERVER=grpc_server:50051
     ports:
       - 8000:5000
@@ -15,7 +15,7 @@ services:
     image: bitnami/redis:latest
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-    command: "/opt/bitnami/scripts/redis/run.sh --maxmemory 2mb --maxmemory-policy allkeys-lru"
+    command: "/opt/bitnami/scripts/redis/run.sh --maxmemory 2mb --maxmemory-policy allkeys-lfu"
     ports:
       - 63791:6379
   redis2:
@@ -23,7 +23,7 @@ services:
     image: bitnami/redis:latest
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-    command: "/opt/bitnami/scripts/redis/run.sh --maxmemory 2mb --maxmemory-policy allkeys-lru"
+    command: "/opt/bitnami/scripts/redis/run.sh --maxmemory 2mb --maxmemory-policy allkeys-lfu"
     ports:
       - 63792:6379
   redis3:
@@ -31,7 +31,7 @@ services:
     image: bitnami/redis:latest
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-    command: "/opt/bitnami/scripts/redis/run.sh --maxmemory 2mb --maxmemory-policy allkeys-lru"
+    command: "/opt/bitnami/scripts/redis/run.sh --maxmemory 2mb --maxmemory-policy allkeys-lfu"
     ports:
       - 63793:6379
   grpc_server:

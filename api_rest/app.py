@@ -1,10 +1,11 @@
 from flask import Flask
-import redis
 import os
 import json
 import grpc
 import service_pb2
 import service_pb2_grpc
+from custom_redis import CustomRedis
+import random
 
 
 app = Flask(__name__)
@@ -12,19 +13,11 @@ app = Flask(__name__)
 CACHE_TYPE=os.environ['CACHE_TYPE']
 GRPC_SERVER=os.environ['GRPC_SERVER']
 
+REDIS_HOSTS=['redis1','redis2','redis3']
 
-REDIS_CONNECTIONS = {
-    'redis1': redis.Redis(host='redis1', port=6379, db=0),
-    'redis2': redis.Redis(host='redis2', port=6379, db=0),
-    'redis3': redis.Redis(host='redis3', port=6379, db=0)
-}
+redis = CustomRedis(REDIS_HOSTS,CACHE_TYPE)
 
-def getRedisConnection(id):
-    if CACHE_TYPE == 'PARTITION':
-        redis_server = ['redis1','redis2','redis3'][id % 3]
-        return redis_server,REDIS_CONNECTIONS[redis_server]
-    else:
-        return 'redis1',REDIS_CONNECTIONS['redis1']
+
 
 
 
@@ -45,17 +38,15 @@ def getFromGRPC(id):
 
 def saveToRedis(id,data):
     data = json.dumps(data)
-    _,redis_connection = getRedisConnection(id)
-    redis_connection.set(id,data)
-    if CACHE_TYPE == 'DUPLICATE':
-        REDIS_CONNECTIONS['redis2'].set(id,data)
-        REDIS_CONNECTIONS['redis3'].set(id,data)
+    redis.set(id,data)
+    
         
 
 def getFromRedis(id):
-    redis_server,redis_connection = getRedisConnection(id)
-    data = redis_connection.get(id)
-    return redis_server,json.loads(data) if data is not None else None
+    redis_server,data = redis.get(id)
+    if data is None:
+        return None,None
+    return redis_server,json.loads(data)
 
 
 def getValue(id):
@@ -67,9 +58,7 @@ def getValue(id):
 
 @app.route("/deleteKeys")
 def deleteKeys():
-    for client in REDIS_CONNECTIONS.values():
-        for key in client.keys('*'):
-            client.delete(key)
+    redis.deleteAllKeys()
     return 'OK'
 
 
@@ -78,5 +67,6 @@ def hello_world(id):
     source,data = getValue(int(id))
     data['source'] = source
     return data
+
 if __name__ == "__main__":
     app.run(debug=True)
